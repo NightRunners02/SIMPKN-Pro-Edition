@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="simpkn-bg" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#dc2626" />
+      <stop offset="55%" stop-color="#b91c1c" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+    <linearGradient id="simpkn-gold" x1="18" y1="16" x2="46" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fde68a" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded Academic Emblem Frame -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#simpkn-bg)" />
+  <rect x="5.5" y="5.5" width="53" height="53" rx="14.5" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5" />
+
+  <!-- Subtle Geometric Shield Glow -->
+  <path d="M32 10L50 17.5V31C50 42.2 42.3 50.6 32 54C21.7 50.6 14 42.2 14 31V17.5L32 10Z" fill="#0f172a" fill-opacity="0.16" />
+
+  <!-- Mortarboard / Academic Cap Top -->
+  <path d="M32 15L50 23.5L32 32L14 23.5L32 15Z" fill="#ffffff" />
+  <path d="M21 28.5V36.2C21 39.2 25.9 42 32 42C38.1 42 43 39.2 43 36.2V28.5L32 33.7L21 28.5Z" fill="#ffffff" fill-opacity="0.92" />
+
+  <!-- Informatics Code Brackets Accent -->
+  <path d="M25 46L19.5 49.5L25 53" stroke="url(#simpkn-gold)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M39 46L44.5 49.5L39 53" stroke="url(#simpkn-gold)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="32" cy="49.5" r="2.2" fill="url(#simpkn-gold)" />
+
+  <!-- Tassel -->
+  <path d="M48 24.5V34.5" stroke="url(#simpkn-gold)" stroke-width="2.4" stroke-linecap="round" />
+  <circle cx="48" cy="36.2" r="2.3" fill="url(#simpkn-gold)" />
+</svg>

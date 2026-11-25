@@ -355,4 +355,5 @@ export interface SystemSettings {
   head_of_program_name: string;
   head_of_program_nip: string;
   contact_email: string;
+  favicon_url?: string | null;
 }

@@ -19,6 +19,11 @@ import {
   ActivityLog,
   SystemSettings
 } from '../types/database';
+import {
+  DEFAULT_FAVICON_URL,
+  getCachedFaviconUrl,
+  setCachedFaviconUrl
+} from '../utils/favicon';
 
 const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   id: 'primary',
@@ -35,6 +40,7 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   head_of_program_name: 'Ir. Galih Wasis Wicaksono, S.Kom., M.Cs.',
   head_of_program_nip: '10814100523PNS',
   contact_email: 'informatika@umm.ac.id',
+  favicon_url: DEFAULT_FAVICON_URL,
 };
 
 class DatabaseService {
@@ -965,25 +971,66 @@ class DatabaseService {
       .eq('id', 'primary')
       .maybeSingle();
     if (!error && data) {
-      return data as SystemSettings;
+      const record = data as SystemSettings;
+      const resolvedFavicon =
+        record.favicon_url || getCachedFaviconUrl() || DEFAULT_FAVICON_URL;
+      if (record.favicon_url) {
+        setCachedFaviconUrl(record.favicon_url);
+      }
+      return {
+        ...record,
+        favicon_url: resolvedFavicon,
+      };
     }
-    return DEFAULT_SYSTEM_SETTINGS;
+    return {
+      ...DEFAULT_SYSTEM_SETTINGS,
+      favicon_url: getCachedFaviconUrl() || DEFAULT_FAVICON_URL,
+    };
   }
 
   async updateSystemSettings(updates: Partial<SystemSettings>): Promise<SystemSettings> {
     const current = await this.getSystemSettings();
-    const updated = { ...current, ...updates, id: 'primary' };
+    const updated: SystemSettings = { ...current, ...updates, id: 'primary' };
 
-    const { data, error } = await supabase
+    if (updated.favicon_url) {
+      setCachedFaviconUrl(updated.favicon_url);
+    }
+
+    let { data, error } = await supabase
       .from('system_settings')
       .upsert([updated])
       .select()
       .single();
+
+    if (
+      error &&
+      (error.message.includes('favicon_url') || error.message.includes('schema cache'))
+    ) {
+      const { favicon_url, ...withoutFavicon } = updated;
+      const retry = await supabase
+        .from('system_settings')
+        .upsert([withoutFavicon])
+        .select()
+        .single();
+      if (!retry.error && retry.data) {
+        this.notify('system_settings');
+        return {
+          ...(retry.data as SystemSettings),
+          favicon_url: favicon_url || DEFAULT_FAVICON_URL,
+        };
+      }
+      error = retry.error;
+    }
+
     if (error || !data) {
       throw new Error(error?.message || 'Gagal memperbarui pengaturan sistem di Supabase.');
     }
     this.notify('system_settings');
-    return data as SystemSettings;
+    return {
+      ...(data as SystemSettings),
+      favicon_url:
+        (data as SystemSettings).favicon_url || updated.favicon_url || DEFAULT_FAVICON_URL,
+    };
   }
 
   // --- FILE UPLOAD (Supabase Storage) ---

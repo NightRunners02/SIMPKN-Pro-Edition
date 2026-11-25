@@ -554,8 +554,11 @@ CREATE TABLE IF NOT EXISTS public.system_settings (
   field_supervisor_weight NUMERIC(5,2) DEFAULT 50.00,
   head_of_program_name VARCHAR(150) DEFAULT 'Ir. Galih Wasis Wicaksono, S.Kom., M.Cs.',
   head_of_program_nip VARCHAR(50) DEFAULT '10814100523PNS',
-  contact_email VARCHAR(150) DEFAULT 'informatika@umm.ac.id'
+  contact_email VARCHAR(150) DEFAULT 'informatika@umm.ac.id',
+  favicon_url TEXT DEFAULT '/favicon.svg'
 );
+
+ALTER TABLE public.system_settings ADD COLUMN IF NOT EXISTS favicon_url TEXT DEFAULT '/favicon.svg';
 
 ALTER TABLE public.system_settings ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public access to system_settings" ON public.system_settings;

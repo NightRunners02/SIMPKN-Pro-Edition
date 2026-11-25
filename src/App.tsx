@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { LoginView } from './components/auth/LoginView';
 import { AppLayout } from './components/layout/AppLayout';
 import { ToastContainer } from './components/common/ToastContainer';
+import { dbService } from './services/db';
+import { applyDocumentFavicon, getCachedFaviconUrl } from './utils/favicon';
 
 // Dashboards
 import { MahasiswaDashboard } from './components/dashboard/MahasiswaDashboard';
@@ -35,6 +37,26 @@ const MainApp: React.FC = () => {
   const { user, role, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [isSqlModalOpen, setIsSqlModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const cached = getCachedFaviconUrl();
+    if (cached) {
+      applyDocumentFavicon(cached);
+    }
+
+    const syncBranding = async () => {
+      try {
+        const settings = await dbService.getSystemSettings();
+        applyDocumentFavicon(settings.favicon_url, settings.app_name);
+      } catch {
+        applyDocumentFavicon();
+      }
+    };
+
+    syncBranding();
+    const unsub = dbService.subscribe('system_settings', syncBranding);
+    return () => unsub();
+  }, []);
 
   if (isLoading) {
     return (
