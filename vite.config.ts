@@ -2,10 +2,54 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig(() => {
+function cleanEnvValue(val?: string): string {
+  return (val || '').trim().replace(/^["']+|["']+$/g, '').trim();
+}
+
+function normalizeUrlOrigin(rawUrl: string): string {
+  const cleaned = cleanEnvValue(rawUrl);
+  if (!cleaned) return '';
+  try {
+    return new URL(cleaned).origin;
+  } catch {
+    return cleaned.replace(/\/rest\/v1\/?.*$/i, '').replace(/\/+$/, '');
+  }
+}
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  const supabaseUrl = normalizeUrlOrigin(
+    process.env.VITE_SUPABASE_URL ||
+      env.VITE_SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.SUPABASE_URL ||
+      env.SUPABASE_URL ||
+      ''
+  );
+
+  const supabaseAnonKey = cleanEnvValue(
+    process.env.VITE_SUPABASE_ANON_KEY ||
+      env.VITE_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      env.SUPABASE_ANON_KEY
+  );
+
+  const defineEnv: Record<string, string> = {};
+  if (supabaseUrl) {
+    defineEnv['import.meta.env.VITE_SUPABASE_URL'] = JSON.stringify(supabaseUrl);
+  }
+  if (supabaseAnonKey) {
+    defineEnv['import.meta.env.VITE_SUPABASE_ANON_KEY'] = JSON.stringify(supabaseAnonKey);
+  }
+
   return {
+    define: defineEnv,
     plugins: [
       react(),
       tailwindcss(),
@@ -23,7 +67,7 @@ export default defineConfig(() => {
           const srcAssets = path.resolve(__dirname, 'src/assets');
           const distAssets = path.resolve(distDir, 'src/assets');
           if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
-            fs.cpSync(srcAssets, distAssets, {recursive: true, force: true});
+            fs.cpSync(srcAssets, distAssets, { recursive: true, force: true });
           }
         },
       },
