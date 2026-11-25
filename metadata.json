@@ -1,0 +1,6 @@
+{
+  "name": "SIMPKN - Sistem Informasi PKN & MBKM Informatika",
+  "description": "Sistem Informasi Praktik Kerja Nyata (PKN) dan Merdeka Belajar Kampus Merdeka (MBKM) Program Studi Informatika.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
